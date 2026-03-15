@@ -23,9 +23,9 @@ RSI_OVERSOLD = 30  # RSI buy threshold
 RSI_OVERBOUGHT = 70  # RSI sell threshold
 
 # Position sizing: fraction of portfolio per trade
-POSITION_SIZE = 0.22   # 22% per position
+POSITION_SIZE = 0.50   # 50% per position
 MAX_POSITIONS = 5     # max concurrent positions
-STOP_LOSS = -0.07     # -7% stop loss
+STOP_LOSS = -0.08     # -8% stop loss
 TAKE_PROFIT = 0.08    # +8% take profit
 
 

@@ -23,10 +23,10 @@ ATR_MAX = 0.06  # Max ATR% for entry (volatility filter)
 
 # ─── ADR Stop Parameters ─────────────────────────────────────────────────────
 
-ADR_PERIOD = 8           # Lookback for Average Daily Range
-ADR_STOP_MULTIPLIER = 0.80 # Stop loss = entry - ADR * multiplier
+ADR_PERIOD = 14           # Lookback for Average Daily Range
+ADR_STOP_MULTIPLIER = 0.75 # Stop loss = entry - ADR * multiplier
 ADR_TP_MULTIPLIER = 4.0   # Take profit = entry + ADR * multiplier
-ADR_TRAILING = False       # Use trailing stop based on ADR
+ADR_TRAILING = True       # Use trailing stop based on ADR
 ADR_TRAIL_MULTIPLIER = 2.0  # Trailing stop = highest close - ADR * multiplier
 
 # ─── Fallback fixed stops (used if ADR data unavailable) ─────────────────────

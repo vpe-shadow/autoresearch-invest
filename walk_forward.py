@@ -28,6 +28,12 @@ from strategy import (
     get_take_profit,
 )
 
+try:
+    from strategy import uses_adr_stops, uses_trailing_stop, get_dynamic_stops
+    HAS_ADR = True
+except ImportError:
+    HAS_ADR = False
+
 # ─── Constants ───────────────────────────────────────────────────────────────
 
 DATA_DIR = "data"
@@ -55,10 +61,9 @@ class Portfolio:
         self.trades: list[dict] = []
         self.equity_curve: list[float] = []
 
-    def buy(self, ticker: str, price: float, date, position_size: float):
-        if ticker in self.positions:
-            return
-        if len(self.positions) >= get_max_positions():
+    def buy(self, ticker: str, price: float, date, position_size: float,
+            stop_info: dict = None):
+        if ticker in self.positions or len(self.positions) >= get_max_positions():
             return
         allocation = self.cash * position_size
         shares = int(allocation / price)
@@ -68,9 +73,21 @@ class Portfolio:
         if cost > self.cash:
             return
         self.cash -= cost
-        self.positions[ticker] = {
-            "shares": shares, "entry_price": price, "entry_date": str(date)
+        pos = {
+            "shares": shares, "entry_price": price, "entry_date": str(date),
+            "highest_price": price,
         }
+        if stop_info:
+            pos["stop_price"] = stop_info["stop_price"]
+            pos["tp_price"] = stop_info["tp_price"]
+            pos["trail_distance"] = stop_info.get("trail_distance")
+            pos["use_adr"] = stop_info.get("use_adr", False)
+        else:
+            pos["stop_price"] = price * (1 + get_stop_loss())
+            pos["tp_price"] = price * (1 + get_take_profit())
+            pos["trail_distance"] = None
+            pos["use_adr"] = False
+        self.positions[ticker] = pos
 
     def sell(self, ticker: str, price: float, date, reason: str = "signal"):
         if ticker not in self.positions:
@@ -86,17 +103,25 @@ class Portfolio:
         })
 
     def check_stops(self, prices: dict[str, float], date):
-        stop_loss = get_stop_loss()
-        take_profit = get_take_profit()
+        use_trailing = HAS_ADR and uses_trailing_stop()
         for ticker in list(self.positions.keys()):
             if ticker not in prices:
                 continue
+            pos = self.positions[ticker]
             price = prices[ticker]
-            entry = self.positions[ticker]["entry_price"]
-            change = (price / entry) - 1
-            if change <= stop_loss:
+
+            if price > pos.get("highest_price", 0):
+                pos["highest_price"] = price
+
+            if use_trailing and pos.get("trail_distance") and pos.get("use_adr"):
+                trail_stop = pos["highest_price"] - pos["trail_distance"]
+                if trail_stop > pos["stop_price"]:
+                    pos["stop_price"] = trail_stop
+
+            if price <= pos["stop_price"]:
                 self.sell(ticker, price, date, reason="stop_loss")
-            elif change >= take_profit:
+                continue
+            if price >= pos["tp_price"]:
                 self.sell(ticker, price, date, reason="take_profit")
 
     def mark_to_market(self, prices: dict[str, float]) -> float:
@@ -170,6 +195,7 @@ def run_fold(universe: dict[str, pd.DataFrame],
 
         portfolio.check_stops(prices, date)
 
+        use_adr = HAS_ADR and uses_adr_stops()
         for ticker in test_data:
             if ticker not in all_signals or date not in all_signals[ticker].index:
                 continue
@@ -177,7 +203,10 @@ def run_fold(universe: dict[str, pd.DataFrame],
             if ticker not in prices:
                 continue
             if signal == 1:
-                portfolio.buy(ticker, prices[ticker], date, position_size)
+                stop_info = None
+                if use_adr:
+                    stop_info = get_dynamic_stops(fold_data[ticker], date, prices[ticker])
+                portfolio.buy(ticker, prices[ticker], date, position_size, stop_info)
             elif signal == -1:
                 portfolio.sell(ticker, prices[ticker], date, reason="signal")
 

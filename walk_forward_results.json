@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-14T18:41:41.625927",
+  "timestamp": "2026-03-14T18:55:03.432647",
   "config": {
     "warmup_months": 12,
     "test_months": 3,
@@ -10,196 +10,196 @@
       "test_start": "2022-03-15",
       "test_end": "2022-06-15",
       "trading_days": 64,
-      "sharpe_ratio": -3.1038,
-      "total_return_pct": -26.86,
-      "max_drawdown_pct": -35.24,
-      "win_rate_pct": 26.7,
-      "total_trades": 30,
-      "final_equity": 73138.89
+      "sharpe_ratio": -0.5614,
+      "total_return_pct": -2.56,
+      "max_drawdown_pct": -7.56,
+      "win_rate_pct": 28.6,
+      "total_trades": 14,
+      "final_equity": 97442.81
     },
     {
       "test_start": "2022-06-15",
       "test_end": "2022-09-15",
       "trading_days": 63,
-      "sharpe_ratio": 0.8503,
-      "total_return_pct": 5.57,
-      "max_drawdown_pct": -9.05,
-      "win_rate_pct": 33.3,
-      "total_trades": 27,
-      "final_equity": 105572.93
+      "sharpe_ratio": 0.5922,
+      "total_return_pct": 2.15,
+      "max_drawdown_pct": -6.05,
+      "win_rate_pct": 35.3,
+      "total_trades": 17,
+      "final_equity": 102147.18
     },
     {
       "test_start": "2022-09-15",
       "test_end": "2022-12-15",
       "trading_days": 64,
-      "sharpe_ratio": -0.0563,
-      "total_return_pct": -1.67,
-      "max_drawdown_pct": -14.61,
-      "win_rate_pct": 42.9,
-      "total_trades": 21,
-      "final_equity": 98329.18
+      "sharpe_ratio": 2.9754,
+      "total_return_pct": 15.48,
+      "max_drawdown_pct": -3.64,
+      "win_rate_pct": 61.5,
+      "total_trades": 13,
+      "final_equity": 115480.95
     },
     {
       "test_start": "2022-12-15",
       "test_end": "2023-03-15",
       "trading_days": 60,
-      "sharpe_ratio": 0.5932,
-      "total_return_pct": 1.76,
-      "max_drawdown_pct": -7.98,
-      "win_rate_pct": 28.6,
-      "total_trades": 21,
-      "final_equity": 101757.93
+      "sharpe_ratio": 2.5883,
+      "total_return_pct": 11.43,
+      "max_drawdown_pct": -4.99,
+      "win_rate_pct": 68.8,
+      "total_trades": 16,
+      "final_equity": 111432.15
     },
     {
       "test_start": "2023-03-15",
       "test_end": "2023-06-15",
       "trading_days": 64,
-      "sharpe_ratio": 1.7482,
-      "total_return_pct": 6.6,
-      "max_drawdown_pct": -6.2,
-      "win_rate_pct": 44.8,
-      "total_trades": 29,
-      "final_equity": 106602.88
+      "sharpe_ratio": 4.3434,
+      "total_return_pct": 18.86,
+      "max_drawdown_pct": -2.84,
+      "win_rate_pct": 75.0,
+      "total_trades": 12,
+      "final_equity": 118860.46
     },
     {
       "test_start": "2023-06-15",
       "test_end": "2023-09-15",
       "trading_days": 63,
-      "sharpe_ratio": -0.9543,
-      "total_return_pct": -4.26,
-      "max_drawdown_pct": -9.54,
-      "win_rate_pct": 47.8,
-      "total_trades": 23,
-      "final_equity": 95741.7
+      "sharpe_ratio": -0.6728,
+      "total_return_pct": -3.09,
+      "max_drawdown_pct": -9.48,
+      "win_rate_pct": 42.9,
+      "total_trades": 14,
+      "final_equity": 96907.26
     },
     {
       "test_start": "2023-09-15",
       "test_end": "2023-12-15",
       "trading_days": 64,
-      "sharpe_ratio": 1.355,
-      "total_return_pct": 6.26,
-      "max_drawdown_pct": -7.47,
-      "win_rate_pct": 63.6,
-      "total_trades": 22,
-      "final_equity": 106256.99
+      "sharpe_ratio": -0.3553,
+      "total_return_pct": -1.1,
+      "max_drawdown_pct": -8.84,
+      "win_rate_pct": 33.3,
+      "total_trades": 15,
+      "final_equity": 98898.76
     },
     {
       "test_start": "2023-12-15",
       "test_end": "2024-03-15",
       "trading_days": 61,
-      "sharpe_ratio": 1.6798,
-      "total_return_pct": 6.89,
-      "max_drawdown_pct": -4.7,
-      "win_rate_pct": 36.4,
-      "total_trades": 33,
-      "final_equity": 106888.03
+      "sharpe_ratio": 1.5533,
+      "total_return_pct": 7.44,
+      "max_drawdown_pct": -6.79,
+      "win_rate_pct": 59.1,
+      "total_trades": 22,
+      "final_equity": 107441.82
     },
     {
       "test_start": "2024-03-15",
       "test_end": "2024-06-15",
       "trading_days": 64,
-      "sharpe_ratio": 0.8187,
-      "total_return_pct": 3.39,
-      "max_drawdown_pct": -7.66,
-      "win_rate_pct": 38.5,
-      "total_trades": 26,
-      "final_equity": 103385.98
+      "sharpe_ratio": 1.8167,
+      "total_return_pct": 5.27,
+      "max_drawdown_pct": -5.58,
+      "win_rate_pct": 45.0,
+      "total_trades": 20,
+      "final_equity": 105272.2
     },
     {
       "test_start": "2024-06-15",
       "test_end": "2024-09-15",
       "trading_days": 62,
-      "sharpe_ratio": 1.7509,
-      "total_return_pct": 8.57,
-      "max_drawdown_pct": -6.64,
-      "win_rate_pct": 57.1,
-      "total_trades": 21,
-      "final_equity": 108569.38
+      "sharpe_ratio": -1.7639,
+      "total_return_pct": -7.13,
+      "max_drawdown_pct": -9.33,
+      "win_rate_pct": 36.8,
+      "total_trades": 19,
+      "final_equity": 92869.3
     },
     {
       "test_start": "2024-09-15",
       "test_end": "2024-12-15",
       "trading_days": 64,
-      "sharpe_ratio": 3.6818,
-      "total_return_pct": 16.36,
-      "max_drawdown_pct": -5.17,
-      "win_rate_pct": 56.7,
-      "total_trades": 30,
-      "final_equity": 116355.15
+      "sharpe_ratio": 2.6035,
+      "total_return_pct": 10.42,
+      "max_drawdown_pct": -4.5,
+      "win_rate_pct": 55.0,
+      "total_trades": 20,
+      "final_equity": 110421.11
     },
     {
       "test_start": "2024-12-15",
       "test_end": "2025-03-15",
       "trading_days": 60,
-      "sharpe_ratio": -1.1257,
-      "total_return_pct": -4.56,
-      "max_drawdown_pct": -7.24,
-      "win_rate_pct": 31.6,
-      "total_trades": 19,
-      "final_equity": 95435.31
+      "sharpe_ratio": -2.333,
+      "total_return_pct": -10.98,
+      "max_drawdown_pct": -11.76,
+      "win_rate_pct": 23.8,
+      "total_trades": 21,
+      "final_equity": 89016.96
     },
     {
       "test_start": "2025-03-15",
       "test_end": "2025-06-15",
       "trading_days": 63,
-      "sharpe_ratio": -2.639,
-      "total_return_pct": -17.6,
-      "max_drawdown_pct": -23.08,
-      "win_rate_pct": 30.8,
-      "total_trades": 26,
-      "final_equity": 82399.58
+      "sharpe_ratio": 0.9719,
+      "total_return_pct": 2.56,
+      "max_drawdown_pct": -4.28,
+      "win_rate_pct": 50.0,
+      "total_trades": 12,
+      "final_equity": 102559.33
     },
     {
       "test_start": "2025-06-15",
       "test_end": "2025-09-15",
       "trading_days": 62,
-      "sharpe_ratio": 0.0558,
-      "total_return_pct": -0.11,
-      "max_drawdown_pct": -7.8,
-      "win_rate_pct": 39.4,
-      "total_trades": 33,
-      "final_equity": 99889.09
+      "sharpe_ratio": 4.2469,
+      "total_return_pct": 14.3,
+      "max_drawdown_pct": -2.37,
+      "win_rate_pct": 68.8,
+      "total_trades": 16,
+      "final_equity": 114304.43
     },
     {
       "test_start": "2025-09-15",
       "test_end": "2025-12-15",
       "trading_days": 64,
-      "sharpe_ratio": -0.0612,
-      "total_return_pct": -0.82,
-      "max_drawdown_pct": -11.73,
-      "win_rate_pct": 52.0,
-      "total_trades": 25,
-      "final_equity": 99175.06
+      "sharpe_ratio": -1.4614,
+      "total_return_pct": -5.13,
+      "max_drawdown_pct": -6.96,
+      "win_rate_pct": 23.8,
+      "total_trades": 21,
+      "final_equity": 94871.92
     }
   ],
   "summary": {
     "folds": 15,
     "sharpe": {
-      "mean": 0.3062,
-      "median": 0.5932,
-      "std": 1.7021,
-      "min": -3.1038,
-      "max": 3.6818,
+      "mean": 0.9696,
+      "median": 0.9719,
+      "std": 2.0611,
+      "min": -2.333,
+      "max": 4.3434,
       "positive_folds": 9,
       "positive_pct": 60.0
     },
     "returns": {
-      "mean_pct": -0.03,
-      "median_pct": 1.76,
-      "std_pct": 10.3,
-      "min_pct": -26.86,
-      "max_pct": 16.36,
-      "profitable_folds": 8,
-      "profitable_pct": 53.3
+      "mean_pct": 3.86,
+      "median_pct": 2.56,
+      "std_pct": 8.66,
+      "min_pct": -10.98,
+      "max_pct": 18.86,
+      "profitable_folds": 9,
+      "profitable_pct": 60.0
     },
     "drawdown": {
-      "mean_pct": -10.94,
-      "worst_pct": -35.24
+      "mean_pct": -6.33,
+      "worst_pct": -11.76
     },
     "trades_per_fold": {
-      "mean": 25.7,
-      "total": 386
+      "mean": 16.8,
+      "total": 252
     },
-    "compounded_return_pct": -8.86
+    "compounded_return_pct": 67.54
   }
 }

@@ -1,0 +1,90 @@
+[
+  {
+    "size": 0.05,
+    "mean_sharpe": 1.131,
+    "std_sharpe": 2.108,
+    "median_sharpe": 1.417,
+    "positive_sharpe_folds": "10/15",
+    "profitable_folds": "10/15",
+    "compounded_return": 21.07,
+    "avg_dd": -1.91,
+    "worst_dd": -3.39
+  },
+  {
+    "size": 0.08,
+    "mean_sharpe": 1.113,
+    "std_sharpe": 2.089,
+    "median_sharpe": 1.381,
+    "positive_sharpe_folds": "10/15",
+    "profitable_folds": "10/15",
+    "compounded_return": 31.73,
+    "avg_dd": -2.86,
+    "worst_dd": -5.19
+  },
+  {
+    "size": 0.1,
+    "mean_sharpe": 1.097,
+    "std_sharpe": 2.088,
+    "median_sharpe": 1.316,
+    "positive_sharpe_folds": "10/15",
+    "profitable_folds": "10/15",
+    "compounded_return": 37.95,
+    "avg_dd": -3.41,
+    "worst_dd": -6.23
+  },
+  {
+    "size": 0.12,
+    "mean_sharpe": 1.082,
+    "std_sharpe": 2.078,
+    "median_sharpe": 1.249,
+    "positive_sharpe_folds": "10/15",
+    "profitable_folds": "10/15",
+    "compounded_return": 43.59,
+    "avg_dd": -3.92,
+    "worst_dd": -7.22
+  },
+  {
+    "size": 0.15,
+    "mean_sharpe": 1.062,
+    "std_sharpe": 2.069,
+    "median_sharpe": 1.19,
+    "positive_sharpe_folds": "9/15",
+    "profitable_folds": "9/15",
+    "compounded_return": 51.23,
+    "avg_dd": -4.59,
+    "worst_dd": -8.49
+  },
+  {
+    "size": 0.18,
+    "mean_sharpe": 1.032,
+    "std_sharpe": 2.064,
+    "median_sharpe": 1.103,
+    "positive_sharpe_folds": "9/15",
+    "profitable_folds": "9/15",
+    "compounded_return": 57.04,
+    "avg_dd": -5.18,
+    "worst_dd": -9.64
+  },
+  {
+    "size": 0.2,
+    "mean_sharpe": 1.018,
+    "std_sharpe": 2.064,
+    "median_sharpe": 1.074,
+    "positive_sharpe_folds": "9/15",
+    "profitable_folds": "9/15",
+    "compounded_return": 60.84,
+    "avg_dd": -5.53,
+    "worst_dd": -10.25
+  },
+  {
+    "size": 0.25,
+    "mean_sharpe": 0.97,
+    "std_sharpe": 2.061,
+    "median_sharpe": 0.972,
+    "positive_sharpe_folds": "9/15",
+    "profitable_folds": "9/15",
+    "compounded_return": 67.54,
+    "avg_dd": -6.33,
+    "worst_dd": -11.76
+  }
+]

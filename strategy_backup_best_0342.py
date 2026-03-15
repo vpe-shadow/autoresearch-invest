@@ -2,7 +2,7 @@
 """
 strategy.py — THE AGENT MODIFIES THIS FILE
 
-Exp 1: MACD crossover with moderate sizing
+Exp 4: Breakout (52-week high)
 """
 
 import pandas as pd
@@ -10,12 +10,11 @@ import numpy as np
 
 # ─── Strategy Parameters ─────────────────────────────────────────────────────
 
-MACD_FAST = 12
-MACD_SLOW = 26
-MACD_SIGNAL = 9
+BREAKOUT_PERIOD = 252  # ~1 year
+LOOKBACK_PERIOD = 20   # Exit if below 20-day low
 
 # Position sizing: fraction of portfolio per trade
-POSITION_SIZE = 0.15   # 15% per position
+POSITION_SIZE = 0.12   # 12% per position
 MAX_POSITIONS = 5     # max concurrent positions
 STOP_LOSS = -0.08     # -8% stop loss
 TAKE_PROFIT = 0.20    # +20% take profit
@@ -25,25 +24,25 @@ TAKE_PROFIT = 0.20    # +20% take profit
 
 def compute_signals(df: pd.DataFrame) -> pd.Series:
     """
-    MACD crossover strategy
+    Breakout strategy: buy on new highs
     """
     close = df["Close"].copy()
+    high = df["High"].copy()
+    low = df["Low"].copy()
 
-    # MACD
-    ema_fast = close.ewm(span=MACD_FAST, adjust=False).mean()
-    ema_slow = close.ewm(span=MACD_SLOW, adjust=False).mean()
-    macd = ema_fast - ema_slow
-    signal_line = macd.ewm(span=MACD_SIGNAL, adjust=False).mean()
+    # Rolling highs/lows
+    rolling_high = high.rolling(BREAKOUT_PERIOD).max()
+    rolling_low = low.rolling(LOOKBACK_PERIOD).min()
 
     # Signals
     signals = pd.Series(0, index=df.index)
 
-    # Buy: MACD crosses above signal
-    buy_condition = (macd > signal_line) & (macd.shift(1) <= signal_line.shift(1))
+    # Buy: new 252-day high
+    buy_condition = close >= rolling_high
     signals[buy_condition] = 1
 
-    # Sell: MACD crosses below signal
-    sell_condition = (macd < signal_line) & (macd.shift(1) >= signal_line.shift(1))
+    # Sell: below 20-day low
+    sell_condition = close <= rolling_low
     signals[sell_condition] = -1
 
     return signals

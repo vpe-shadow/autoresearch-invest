@@ -2,7 +2,7 @@
 """
 strategy.py — THE AGENT MODIFIES THIS FILE
 
-Exp 1: MACD crossover with moderate sizing
+Exp 10: Try even tighter momentum threshold (10% instead of 8%)
 """
 
 import pandas as pd
@@ -10,40 +10,50 @@ import numpy as np
 
 # ─── Strategy Parameters ─────────────────────────────────────────────────────
 
-MACD_FAST = 12
-MACD_SLOW = 26
-MACD_SIGNAL = 9
+MOMENTUM_PERIOD = 20
+MOMENTUM_THRESHOLD = 0.10  # 10% minimum return (stricter)
+ATR_PERIOD = 14
+ATR_MAX = 0.06  # Maximum volatility allowed
 
 # Position sizing: fraction of portfolio per trade
 POSITION_SIZE = 0.15   # 15% per position
 MAX_POSITIONS = 5     # max concurrent positions
-STOP_LOSS = -0.08     # -8% stop loss
-TAKE_PROFIT = 0.20    # +20% take profit
+STOP_LOSS = -0.07     # -7% stop loss
+TAKE_PROFIT = 0.15    # +15% take profit
 
 
 # ─── Signal Generation ───────────────────────────────────────────────────────
 
 def compute_signals(df: pd.DataFrame) -> pd.Series:
     """
-    MACD crossover strategy
+    Momentum strategy with strict volatility filter
     """
     close = df["Close"].copy()
+    high = df["High"].copy()
+    low = df["Low"].copy()
 
-    # MACD
-    ema_fast = close.ewm(span=MACD_FAST, adjust=False).mean()
-    ema_slow = close.ewm(span=MACD_SLOW, adjust=False).mean()
-    macd = ema_fast - ema_slow
-    signal_line = macd.ewm(span=MACD_SIGNAL, adjust=False).mean()
+    # Momentum = N-day return
+    momentum = close.pct_change(MOMENTUM_PERIOD)
+
+    # ATR
+    tr1 = high - low
+    tr2 = abs(high - close.shift(1))
+    tr3 = abs(low - close.shift(1))
+    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+    atr = tr.rolling(ATR_PERIOD).mean()
+    
+    # Normalized ATR (as % of price)
+    atr_pct = atr / close
 
     # Signals
     signals = pd.Series(0, index=df.index)
 
-    # Buy: MACD crosses above signal
-    buy_condition = (macd > signal_line) & (macd.shift(1) <= signal_line.shift(1))
+    # Buy: strong momentum + low volatility
+    buy_condition = (momentum > MOMENTUM_THRESHOLD) & (atr_pct < ATR_MAX)
     signals[buy_condition] = 1
 
-    # Sell: MACD crosses below signal
-    sell_condition = (macd < signal_line) & (macd.shift(1) >= signal_line.shift(1))
+    # Sell: momentum fades
+    sell_condition = (momentum < 0) & (momentum.shift(1) >= 0)
     signals[sell_condition] = -1
 
     return signals

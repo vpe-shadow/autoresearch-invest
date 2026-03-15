@@ -23,10 +23,10 @@ RSI_OVERSOLD = 30  # RSI buy threshold
 RSI_OVERBOUGHT = 70  # RSI sell threshold
 
 # Position sizing: fraction of portfolio per trade
-POSITION_SIZE = 0.1   # 10% per position
+POSITION_SIZE = 0.22   # 22% per position
 MAX_POSITIONS = 5     # max concurrent positions
-STOP_LOSS = -0.05     # -5% stop loss
-TAKE_PROFIT = 0.15    # +15% take profit
+STOP_LOSS = -0.07     # -7% stop loss
+TAKE_PROFIT = 0.08    # +8% take profit
 
 
 # ─── Signal Generation ───────────────────────────────────────────────────────
@@ -40,26 +40,21 @@ def compute_signals(df: pd.DataFrame) -> pd.Series:
     """
     close = df["Close"].copy()
 
-    # Moving averages
-    fast_ma = close.rolling(FAST_MA).mean()
-    slow_ma = close.rolling(SLOW_MA).mean()
-
-    # RSI
-    delta = close.diff()
-    gain = delta.where(delta > 0, 0.0).rolling(RSI_PERIOD).mean()
-    loss = (-delta.where(delta < 0, 0.0)).rolling(RSI_PERIOD).mean()
-    rs = gain / loss.replace(0, np.nan)
-    rsi = 100 - (100 / (1 + rs))
+    # MACD
+    exp1 = close.ewm(span=12, adjust=False).mean()
+    exp2 = close.ewm(span=26, adjust=False).mean()
+    macd = exp1 - exp2
+    signal_line = macd.ewm(span=9, adjust=False).mean()
 
     # Signals
     signals = pd.Series(0, index=df.index)
 
-    # Buy: fast MA crosses above slow MA AND RSI not overbought
-    buy_condition = (fast_ma > slow_ma) & (fast_ma.shift(1) <= slow_ma.shift(1)) & (rsi < RSI_OVERBOUGHT)
+    # Buy: MACD crosses above signal line
+    buy_condition = (macd > signal_line) & (macd.shift(1) <= signal_line.shift(1))
     signals[buy_condition] = 1
 
-    # Sell: fast MA crosses below slow MA OR RSI overbought
-    sell_condition = (fast_ma < slow_ma) & (fast_ma.shift(1) >= slow_ma.shift(1)) | (rsi > RSI_OVERBOUGHT)
+    # Sell: MACD crosses below signal line
+    sell_condition = (macd < signal_line) & (macd.shift(1) >= signal_line.shift(1))
     signals[sell_condition] = -1
 
     return signals

@@ -1,0 +1,12 @@
+📊 **Signal Scanner** — Sat Mar 14, 2026
+
+📌 **Tracking positions:**
+  🔴 GRMN: $233.52 (+0.0%) | SL $217.17 | TP $268.55
+
+🟢 **BUY signals:**
+  • **GRMN** $233.52 — momentum +15.4%, ATR 3.4%
+
+⚪ **No signal:** NVDA, AVGO, AAPL, TSLA, META, GOOG, MSFT, PANW, ISRG, MNDY, PTON, DOCU, QCOM, BABA
+
+_Strategy: 20d momentum >8% + ATR <6% | SL -7% | TP +15%_
+_Position size: 5% per trade | Max 5 positions_

@@ -1,0 +1,16 @@
+{
+  "positions": {
+    "GRMN": {
+      "entry_price": 233.52,
+      "entry_date": "2026-03-13"
+    }
+  },
+  "history": [
+    {
+      "action": "BUY",
+      "ticker": "GRMN",
+      "price": 233.52,
+      "date": "2026-03-13"
+    }
+  ]
+}

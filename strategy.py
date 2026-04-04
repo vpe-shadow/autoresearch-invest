@@ -18,6 +18,15 @@ MOMENTUM_THRESHOLD = 0.08
 ATR_PERIOD = 14
 ATR_MAX = 0.06
 
+# ─── Macro Regime Filter ─────────────────────────────────────────────────────
+# Suppress BUY signals when broad market is in downtrend
+# SPY must be above its 50-day MA AND VIX must be below threshold
+
+REGIME_ENABLED = True
+REGIME_BENCHMARK = "SPY"       # S&P 500 ETF
+REGIME_MA_PERIOD = 50          # 50-day moving average
+REGIME_VIX_MAX = 28.0          # Suppress buys when VIX > 28 (elevated fear)
+
 # ─── Asymmetric Fixed Stops (inspired by ADR 1:5 finding) ────────────────────
 
 STOP_LOSS = -0.07      # Tight -3% stop (cut losers fast)
@@ -31,7 +40,8 @@ MAX_POSITIONS = 5
 
 # ─── Signal Generation ───────────────────────────────────────────────────────
 
-def compute_signals(df: pd.DataFrame) -> pd.Series:
+def compute_signals(df: pd.DataFrame, regime_ok: bool = True) -> pd.Series:
+    """Compute buy/sell signals. If regime_ok=False, suppress BUY signals."""
     close = df["Close"].copy()
     high = df["High"].copy()
     low = df["Low"].copy()
@@ -48,7 +58,9 @@ def compute_signals(df: pd.DataFrame) -> pd.Series:
     signals = pd.Series(0, index=df.index)
 
     buy_condition = (momentum > MOMENTUM_THRESHOLD) & (atr_pct < ATR_MAX)
-    signals[buy_condition] = 1
+    if regime_ok:
+        signals[buy_condition] = 1
+    # If regime_ok=False, no BUY signals are generated (risk-off mode)
 
     sell_condition = (momentum < 0) & (momentum.shift(1) >= 0)
     signals[sell_condition] = -1

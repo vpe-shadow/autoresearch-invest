@@ -5,6 +5,11 @@ signal_scanner.py — Daily signal scanner for live trading alerts.
 Fetches recent price data, computes momentum + ATR signals,
 and outputs actionable buy/sell/hold for each ticker.
 
+Includes MACRO REGIME FILTER (added Apr 4, 2026):
+- SPY must be above 50-day MA (uptrend)
+- VIX must be below 28 (no elevated fear)
+- If either fails → BUY signals suppressed (risk-off mode)
+
 Designed to run pre-market via cron → Telegram alert.
 """
 
@@ -25,6 +30,15 @@ ATR_MAX = 0.06  # 6%
 STOP_LOSS = -0.07
 TAKE_PROFIT = 0.15
 
+# ─── Macro Regime Filter ─────────────────────────────────────────────────────
+# Suppress BUY signals when broad market is in downtrend
+
+REGIME_ENABLED = True
+REGIME_BENCHMARK = "SPY"
+REGIME_MA_PERIOD = 50        # SPY must be above 50-day MA
+REGIME_VIX_TICKER = "^VIX"
+REGIME_VIX_MAX = 28.0        # Suppress buys when VIX > 28
+
 UNIVERSE = [
     "NVDA", "AVGO", "AAPL", "TSLA", "META", "GOOG", "MSFT",
     "PANW", "ISRG", "MNDY", "GRMN", "PTON", "DOCU", "QCOM", "BABA",
@@ -35,6 +49,64 @@ LOOKBACK_DAYS = 90
 
 # State file — tracks open positions for sell signals
 STATE_FILE = "scanner_state.json"
+
+
+# ─── Macro Regime Check ─────────────────────────────────────────────────────
+
+def check_macro_regime() -> dict:
+    """
+    Check if the broad market is in a favorable regime for buying.
+    Returns dict with regime_ok (bool), details (str), spy_ok, vix_ok.
+    """
+    if not REGIME_ENABLED:
+        return {"regime_ok": True, "details": "Regime filter disabled",
+                "spy_ok": True, "vix_ok": True, "spy_price": None,
+                "spy_ma50": None, "vix_level": None}
+
+    regime = {"regime_ok": True, "spy_ok": True, "vix_ok": True,
+              "spy_price": None, "spy_ma50": None, "vix_level": None}
+    details = []
+
+    # Check SPY vs 50-day MA
+    try:
+        spy = yf.download(REGIME_BENCHMARK, period="120d", interval="1d",
+                          auto_adjust=True, progress=False)
+        if isinstance(spy.columns, pd.MultiIndex):
+            spy.columns = spy.columns.get_level_values(0)
+        if not spy.empty and len(spy) >= REGIME_MA_PERIOD:
+            spy_close = float(spy["Close"].iloc[-1])
+            spy_ma50 = float(spy["Close"].rolling(REGIME_MA_PERIOD).mean().iloc[-1])
+            spy_vs_ma = ((spy_close / spy_ma50) - 1) * 100
+            regime["spy_price"] = round(spy_close, 2)
+            regime["spy_ma50"] = round(spy_ma50, 2)
+            if spy_close < spy_ma50:
+                regime["spy_ok"] = False
+                details.append(f"SPY ${spy_close:.0f} BELOW 50-MA ${spy_ma50:.0f} ({spy_vs_ma:+.1f}%)")
+            else:
+                details.append(f"SPY ${spy_close:.0f} above 50-MA ${spy_ma50:.0f} ({spy_vs_ma:+.1f}%)")
+    except Exception as e:
+        details.append(f"SPY check failed: {e}")
+
+    # Check VIX
+    try:
+        vix = yf.download(REGIME_VIX_TICKER, period="5d", interval="1d",
+                          auto_adjust=True, progress=False)
+        if isinstance(vix.columns, pd.MultiIndex):
+            vix.columns = vix.columns.get_level_values(0)
+        if not vix.empty:
+            vix_level = float(vix["Close"].iloc[-1])
+            regime["vix_level"] = round(vix_level, 1)
+            if vix_level > REGIME_VIX_MAX:
+                regime["vix_ok"] = False
+                details.append(f"VIX {vix_level:.1f} ABOVE threshold {REGIME_VIX_MAX}")
+            else:
+                details.append(f"VIX {vix_level:.1f} (threshold {REGIME_VIX_MAX})")
+    except Exception as e:
+        details.append(f"VIX check failed: {e}")
+
+    regime["regime_ok"] = regime["spy_ok"] and regime["vix_ok"]
+    regime["details"] = " | ".join(details)
+    return regime
 
 
 # ─── Core Logic ──────────────────────────────────────────────────────────────
@@ -78,6 +150,7 @@ def compute_signal(df: pd.DataFrame) -> dict:
     prev_mom = float(momentum.iloc[-2]) if len(momentum) > 1 else 0
 
     # Signal logic (matches strategy.py)
+    # BUY may be suppressed by regime filter in main()
     signal = "HOLD"
     if latest_mom > MOMENTUM_THRESHOLD and latest_atr < ATR_MAX:
         signal = "BUY"
@@ -107,11 +180,20 @@ def save_state(state: dict):
         json.dump(state, f, indent=2)
 
 
-def format_report(results: list[dict], state: dict) -> str:
+def format_report(results: list[dict], state: dict, regime: dict = None) -> str:
     """Format results as a Telegram-friendly report."""
     now = datetime.now()
     lines = [f"📊 **Signal Scanner** — {now.strftime('%a %b %d, %Y')}"]
     lines.append("")
+
+    # Macro regime status
+    if regime:
+        if regime["regime_ok"]:
+            lines.append(f"🟢 **Macro: RISK-ON** — {regime['details']}")
+        else:
+            lines.append(f"🔴 **Macro: RISK-OFF** — {regime['details']}")
+            lines.append("_⚠️ BUY signals suppressed until macro improves_")
+        lines.append("")
 
     buys = [r for r in results if r["signal"] == "BUY"]
     sells = [r for r in results if r["signal"] == "SELL"]
@@ -137,6 +219,14 @@ def format_report(results: list[dict], state: dict) -> str:
             lines.append(f"  • **{r['ticker']}** ${r['price']} — momentum +{r['momentum_pct']}%, ATR {r['atr_pct']}%")
         lines.append("")
 
+    # Show suppressed signals (would-be buys blocked by regime)
+    suppressed = [r for r in results if r.get("_suppressed")]
+    if suppressed:
+        lines.append("🟡 **Suppressed by macro filter (would-be BUY):**")
+        for r in suppressed:
+            lines.append(f"  • {r['ticker']} ${r['price']} — momentum +{r['momentum_pct']}%, ATR {r['atr_pct']}%")
+        lines.append("")
+
     if sells:
         lines.append("🔴 **SELL signals:**")
         for r in sells:
@@ -155,7 +245,7 @@ def format_report(results: list[dict], state: dict) -> str:
 
     # Strategy reminder
     lines.append("_Strategy: 20d momentum >8% + ATR <6% | SL -7% | TP +15%_")
-    lines.append("_Position size: 5% per trade | Max 5 positions_")
+    lines.append("_Macro filter: SPY > 50-MA + VIX < 28 | 5% sizing | Max 5 positions_")
 
     return "\n".join(lines)
 
@@ -163,6 +253,16 @@ def format_report(results: list[dict], state: dict) -> str:
 def main():
     state = load_state()
     results = []
+
+    # Check macro regime FIRST
+    print("Checking macro regime...")
+    regime = check_macro_regime()
+    if regime["regime_ok"]:
+        print(f"  ✅ RISK-ON: {regime['details']}")
+    else:
+        print(f"  ⚠️ RISK-OFF: {regime['details']}")
+        print("  BUY signals will be suppressed.")
+    print()
 
     print(f"Scanning {len(UNIVERSE)} tickers...")
     for ticker in UNIVERSE:
@@ -178,6 +278,12 @@ def main():
         info["ticker"] = ticker
         results.append(info)
         print(f"{info['signal']} (mom={info['momentum_pct']}%, atr={info['atr_pct']}%)")
+
+        # Suppress BUY if macro regime is risk-off
+        if info["signal"] == "BUY" and not regime["regime_ok"]:
+            info["_suppressed"] = True
+            info["signal"] = "HOLD"  # Downgrade to HOLD
+            print(f"    → BUY suppressed (risk-off regime)")
 
         # Track positions
         if info["signal"] == "BUY" and ticker not in state["positions"]:
@@ -220,7 +326,7 @@ def main():
 
     save_state(state)
 
-    report = format_report(results, state)
+    report = format_report(results, state, regime)
     print("\n" + "=" * 60)
     print(report)
     print("=" * 60)
@@ -229,10 +335,16 @@ def main():
     with open("latest_signal_report.txt", "w") as f:
         f.write(report)
 
-    # Also save as JSON
+    # Also save as JSON — include regime data
     with open("latest_signals.json", "w") as f:
         json.dump({
             "timestamp": datetime.now().isoformat(),
+            "regime": {
+                "ok": regime["regime_ok"],
+                "spy_price": regime.get("spy_price"),
+                "spy_ma50": regime.get("spy_ma50"),
+                "vix_level": regime.get("vix_level"),
+            },
             "results": results,
             "positions": state["positions"],
         }, f, indent=2)

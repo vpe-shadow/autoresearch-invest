@@ -1,16 +1,44 @@
 {
-  "positions": {
-    "GRMN": {
-      "entry_price": 233.52,
-      "entry_date": "2026-03-13"
-    }
-  },
+  "positions": {},
   "history": [
     {
       "action": "BUY",
       "ticker": "GRMN",
       "price": 233.52,
       "date": "2026-03-13"
+    },
+    {
+      "action": "BUY",
+      "ticker": "PANW",
+      "price": 168.91,
+      "date": "2026-03-18"
+    },
+    {
+      "action": "SELL",
+      "ticker": "GRMN",
+      "price": 231.6,
+      "date": "2026-03-18",
+      "pnl_pct": -0.8
+    },
+    {
+      "action": "BUY",
+      "ticker": "DOCU",
+      "price": 48.9,
+      "date": "2026-03-18"
+    },
+    {
+      "action": "STOP_LOSS",
+      "ticker": "PANW",
+      "price": 153.22,
+      "date": "2026-03-25",
+      "pnl_pct": -9.3
+    },
+    {
+      "action": "SELL",
+      "ticker": "DOCU",
+      "price": 47.82,
+      "date": "2026-04-02",
+      "pnl_pct": -2.2
     }
   ]
 }
